@@ -1,40 +1,57 @@
-import { Component, OnInit } from '@angular/core';
-import { MatSnackBar } from '@angular/material';
-import { take } from 'rxjs/operators';
-
-import { AppConfigService } from './core/services/app-config.service';
-import { AuthService } from './core/services/auth.service';
-import { ErrorService } from './core/services/error.service';
+import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { variable } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-root',
-  template: `
-    <router-outlet></router-outlet>
-  `
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
-
+export class AppComponent {
+  private apiURL = 'https://api.graph.cool/simple/v1/cjx633ued179g0148y435mbbm';
   constructor(
-    private appConfig: AppConfigService,
-    private authService: AuthService,
-    private errorService: ErrorService,
-    private snackBar: MatSnackBar
-  ) { }
-
-  ngOnInit(): void {
-    this.authService.autoLogin()
-      .pipe(take(1))
-      .subscribe(
-        null,
-        error => {
-          const message = this.errorService.getErrorMessage(error);
-          this.snackBar.open(
-            `Error: ${message}`,
-            'Done',
-            { duration: 5000, verticalPosition: 'top' }
-          );
-        }
-      );
+    private http: HttpClient
+  ){
+    this.createUser();
+    this.allUsers();
   }
 
+  allUsers(): void{
+    const body = {
+      query: `
+        query {
+          allUsers {
+            id
+            name
+            email
+          }
+        }`
+      }
+      this.http.post(this.apiURL, body)
+          .subscribe(res => console.log('Query: ', res));
+        
+  };
+
+  createUser(): void{
+
+    const body ={
+      query: `
+        mutation CreateNewUser($name: String!, $email: String!, $password: String!) {
+          createUser(name: $name, email: $email, password: $password){
+            id
+            name
+            email
+          }
+        }
+      `,
+      variables:{
+        name: 'Black Panther',
+        email: 'panther@avengers.com',
+        password: '123456'
+      }
+    };
+
+    this.http.post(this.apiURL, body)
+    .subscribe(res => console.log('Mutation ', res));
+  };
 }

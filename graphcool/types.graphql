@@ -7,25 +7,24 @@ type User @model {
   email: String! @isUnique
   password: String!
   createdAt: DateTime!
-  updatedAt: DateTime!
+  updatedAt:DateTime!
   chats: [Chat!]! @relation(name: "UsersOnChats")
   messages: [Message!]! @relation(name: "MessagesOnUser")
   photo: File @relation(name: "UserPhoto")
-  dummy: String
 }
 
-type Chat @model {
+type Chat @model{
   id: ID! @isUnique
-  title: String
+  title: String!
   isGroup: Boolean! @defaultValue(value: "false")
   createdAt: DateTime!
-  updatedAt: DateTime!
+  updatedAt:DateTime!
   users: [User!]! @relation(name: "UsersOnChats")
   messages: [Message!]! @relation(name: "MessagesOnChat")
   photo: File @relation(name: "ChatPhoto")
 }
 
-type Message @model {
+type Message @model{
   id: ID! @isUnique
   text: String!
   createdAt: DateTime!
@@ -33,13 +32,13 @@ type Message @model {
   chat: Chat! @relation(name: "MessagesOnChat")
 }
 
-type File @model {
+type File @model{
   id: ID! @isUnique
-  secret: String
+  secrete: String
   name: String
   size: Int
   url: String
   contentType: String
-  user: User @relation(name: "UserPhoto")
+  user: User @relation(name: "UserPhoto") 
   chat: Chat @relation(name: "ChatPhoto")
 }
